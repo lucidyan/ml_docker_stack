@@ -1,0 +1,68 @@
+version: '3.7'
+
+x-default-opts:
+  &default-opts
+  logging:
+    options:
+      max-size: "10m"
+
+networks:
+  ntw_front:
+    external: true
+
+services:
+
+  redis:
+    image: redis:5.0-alpine
+    ports:
+      - "6379:6379"
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+    networks:
+      - ntw_front
+
+  model_a:
+    image: service_one/model_a
+    depends_on:
+      - redis
+    deploy:
+      labels:
+        - "traefik.backend=service_one"
+        - "traefik.backend.healthcheck.path=/healthcheck/"
+        - "traefik.frontend.rule=PathPrefix:/"
+        - "traefik.port=5000"
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+    networks:
+      - ntw_front
+
+  model_b:
+    image: service_one/model_b
+    depends_on:
+      - redis
+    deploy:
+      labels:
+        - "traefik.backend=service_one"
+        - "traefik.backend.healthcheck.path=/healthcheck/"
+        - "traefik.frontend.rule=PathPrefix:/"
+        - "traefik.port=5000"
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+    networks:
+      - ntw_front

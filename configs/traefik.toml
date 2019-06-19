@@ -1,0 +1,13 @@
+defaultEntryPoints = ["http"]
+
+[entryPoints]
+  [entryPoints.dashboard]
+    address = ":8080"
+    [entryPoints.dashboard.auth]
+      [entryPoints.dashboard.auth.basic]
+        users = ["admin:$2y$05$pAfipn3.brdHMI2eWGnYH.84XYqLozp1sUPi36/l54UAwv.zGLtNC"]
+  [entryPoints.http]
+    address = ":80"
+
+[api]
+entrypoint="dashboard"
